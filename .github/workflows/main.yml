@@ -11,8 +11,6 @@ jobs:
     steps:                                           
     - name: Deploy using ssh                          
       uses: appleboy/ssh-action@master 
-      env:
-        PORT: 8000              
       with:                                           
         host: ${{ secrets.HOST }}                     
         username: ${{ secrets.USERNAME }}             
