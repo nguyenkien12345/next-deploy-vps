@@ -20,7 +20,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22                                      
         script: |
-          cd /home/next-deploy-vps || exit 1
+          cd /home/ubuntu/projects/next-deploy-vps || exit 1
           git fetch origin || exit 1
           git checkout production || exit 1
           git pull || exit 1
