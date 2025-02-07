@@ -8,7 +8,10 @@ on:
 jobs:                                                
   deploy:                                             
     runs-on: ubuntu-latest                           
-    steps:                                           
+    steps:  
+    - name: Debug SSH Connection         
+      run: |
+        ssh -v -p 22 -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'Connected successfully'"                                 
     - name: Deploy using ssh                          
       uses: appleboy/ssh-action@master 
       with:                                           
