@@ -25,3 +25,24 @@ jobs:
           npm install || exit 1
           npm run build || (echo "Build failed" && exit 1)
           pm2 reload next-demo || pm2 start npm -- start
+    - name: Notify Slack
+    # curl -X POST: Sử dụng phương thức POST để gửi request
+    # -H 'Content-type: application/json':  Chỉ định kiểu dữ liệu gửi đi là JSON
+    # -H 'Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN}}': Token xác thực với Slack API
+    # --data "{
+    #       \"channel\":\"your-slack-channel-here\",                      Tên channel Slack sẽ nhận thông báo
+    #       \"text\":\"New push to production branch\\n                   Nội dung thông báo, \\n là xuống dòng
+    #       Commit message: *${{ github.event.head_commit.message }}*\\n  Message của commit, *...* để in đậm
+    #       Author: *${{ github.event.head_commit.author.name }}*\\n      Tên người commit
+    #       URL: ${{ github.event.head_commit.url }}\"                    Link đến commit
+    #     }" https://slack.com/api/chat.postMessage
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        -H 'Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN}}' \
+        --data "{
+          \"channel\":\"nextjs-deploy-vps\",
+          \"text\":\"New push to production branch\\n
+          Commit message: *${{ github.event.head_commit.message }}*\\n
+          Author: *${{ github.event.head_commit.author.name }}*\\n
+          URL: ${{ github.event.head_commit.url }}\"
+        }" https://slack.com/api/chat.postMessage
