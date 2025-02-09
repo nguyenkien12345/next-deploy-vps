@@ -7,8 +7,8 @@ on:
   # Cho phép kích hoạt workflow thủ công từ giao diện GitHub Actions trên repository.
   workflow_dispatch:
   # Cho phép chạy tự động theo lịch cron. Cấu trúc '*/5 * *' nghĩa là chạy mỗi 5 phút
-  schedule:
-    - cron: '*/5 * * * *'
+  # schedule:
+  #   - cron: '*/5 * * * *'
 
 jobs:                                                
   deploy:                                             
