@@ -4,6 +4,11 @@ name: Next Deployment
 on:                                                   
   push:                                               
     branches: [production]
+  # Cho phép kích hoạt workflow thủ công từ giao diện GitHub Actions trên repository.
+  workflow_dispatch:
+  # Cho phép chạy tự động theo lịch cron. Cấu trúc '*/5 * *' nghĩa là chạy mỗi 5 phút
+  schedule:
+    - cron: '*/5 * * * *'
 
 jobs:                                                
   deploy:                                             
@@ -25,6 +30,24 @@ jobs:
           npm install || exit 1
           npm run build || (echo "Build failed" && exit 1)
           pm2 reload next-demo || pm2 start npm -- start
+    
+    # Lấy source code (clone repository) từ repository của chúng ta
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Cài đặt Python 3.x
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+          python-version: 3.x
+    
+    # Chạy file send_email.py
+    - name: Run email code
+      env:
+        USER_EMAIL: ${{ secrets.USER_EMAIL }}
+        USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+      run: python send_email.py
+
     - name: Notify Slack
       run: |
         curl -X POST -H 'Content-type: application/json' \
