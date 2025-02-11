@@ -59,3 +59,20 @@ jobs:
           Author: *${{ github.event.head_commit.author.name }}*\\n
           URL: ${{ github.event.head_commit.url }}\"
         }" https://slack.com/api/chat.postMessage
+
+    # Mục đích của upload-artifact: 
+    # - Lưu trữ các file build để có thể tải xuống sau này
+    # - Hữu ích cho việc debug khi deployment thất bại
+    # - Cho phép chia sẻ build artifacts giữa các jobs khác nhau
+    # - Lưu trữ evidence của mỗi lần build
+    # - Trong Actions của github sau khi chạy CI/CD xong nó sẽ có 1 cái link hiển thị đường dẫn cho phép download các file build này về máy tính 
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: next-build                  # Tên của artifact
+        path: |                           # Đường dẫn đến files/folders cần upload
+          .next/                          
+          public/                        
+          package.json
+          package-lock.json
+        retention-days: 7                # Số ngày lưu trữ artifact
