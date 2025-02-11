@@ -101,22 +101,32 @@ jobs:
         path: backup-artifacts 
 
     - name: Prepare backup
-      # cd backup-artifacts: Di chuyển vào thư mục đã chứa files downloaded. Phải match với path ở bước download trước
+      # mkdir -p backup-output => Tạo thư mục riêng cho backup để tránh conflict
+      # cp -r backup-artifacts/* backup-output/ => Copy files sang thư mục mới trước khi nén
+      # cd backup-artifacts => Di chuyển vào thư mục đã chứa files downloaded. Phải match với path ở bước download trước (step Download Next.js artifacts)
       # tar -czf nextjs-backup.tar.gz => Nén tất cả files trong thư mục hiện tại (.) vào file nextjs-backup.tar.gz. File nén sẽ nằm trong thư mục backup-artifacts
+      # echo "Backup created at $(date)" >> backup-info.txt =>  Ghi thông tin backup
       run: |
+        mkdir -p backup-output
+        cp -r backup-artifacts/* backup-output/
         cd backup-artifacts
-        tar -czf nextjs-backup.tar.gz .   
+        tar -czf ../nextjs-backup.tar.gz . || exit 1   
         echo "Backup created at $(date)" >> backup-info.txt
       
     - name: Upload to backup storage
       uses: actions/upload-artifact@v4
       with:
-        name: nextjs-backup-$(date +%Y%m%d)  # Tên artifact cho bản backup. $(date +%Y%m%d) sẽ thêm ngày tháng vào tên (ví dụ: nextjs-backup-20240211)
-        # path: Đường dẫn relative đến các files cần upload. Có thể liệt kê nhiều files/folders. Phải match với vị trí thật của files trong workspace
+        # name => Tên artifact cho bản backup. $(date +%Y%m%d) sẽ thêm ngày tháng vào tên (ví dụ: nextjs-backup-20240211)
+        name: nextjs-backup-$(date +%Y%m%d)  
+        # path => Đường dẫn relative đến các files cần upload. Có thể liệt kê nhiều files/folders. Phải match với vị trí thật của files trong workspace (Dựa trên step Prepare backup)
         path: |
-          backup-artifacts/nextjs-backup.tar.gz 
-          backup-artifacts/backup-info.txt
-        retention-days: 30    # Giữ backup lâu hơn
+          nextjs-backup.tar.gz 
+          backup-info.txt
+        retention-days: 30    # Số ngày lưu trữ artifact
 
     - name: Cleanup
-      run: rm -rf backup-artifacts    # Dọn dẹp sau khi hoàn tất
+      run: |    # Dọn dẹp sau khi hoàn tất
+        rm -rf backup-artifacts
+        rm -rf backup-output
+        rm -f nextjs-backup.tar.gz backup-info.txt
+
