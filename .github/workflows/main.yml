@@ -67,7 +67,7 @@ jobs:
     # - Lưu trữ evidence của mỗi lần build
     # - Trong Actions của github sau khi chạy CI/CD xong nó sẽ có 1 cái link hiển thị đường dẫn cho phép download các file build này về máy tính 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: next-build                  # Tên của artifact
         path: |                           # Đường dẫn đến files/folders cần upload
